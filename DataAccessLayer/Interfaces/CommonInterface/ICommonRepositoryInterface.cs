@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Interfaces.CommonInterface
 {
-    public interface ICommonRepository<TEntity>
+    public interface ICommonRepositoryInterface<TEntity>
         where TEntity : EntityBase
     {
         Task<TEntity?> FindAsync(int id);

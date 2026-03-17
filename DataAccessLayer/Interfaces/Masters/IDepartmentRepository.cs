@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Interfaces.Masters
 {
-    public interface IDepartmentInterface : ICommonRepository<DepartmentEntity>
+    public interface IDepartmentRepository : ICommonRepositoryInterface<DepartmentEntity>
     {
 
     }
