@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repositories.Masters
 {
-    internal class DepartmentRepository(ApplicationDbContext _context) : IDepartmentRepository
+    public class DepartmentRepository(ApplicationDbContext _context) : IDepartmentRepository
     {
         public Task<decimal> AddAsync(DepartmentEntity entity)
         {

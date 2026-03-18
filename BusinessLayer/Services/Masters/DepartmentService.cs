@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLayer.Services.Masters
 {
-    internal class DepartmentService(IDepartmentRepository deaprtmentRepository, IMapper mapper) : IDepartmentService
+    public class DepartmentService(IDepartmentRepository deaprtmentRepository) : IDepartmentService
     {
         public async Task<DepartmentResponseModel?> GetByIdAsync(int id)
         {
@@ -19,9 +19,12 @@ namespace BusinessLayer.Services.Masters
             if (entity == null)
                 return null;
 
+
             return new DepartmentResponseModel
             {
-               
+                id = entity.Id,
+                departmentName = entity.DepartmentName,
+                departmentCode = entity.DepartmentCode
             };
 
         }

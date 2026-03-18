@@ -1,4 +1,10 @@
+using BusinessLayer.Interfaces.Masters;
+using BusinessLayer.Services.Masters;
+using DataAccessLayer.Interfaces.Masters;
+using DataAccessLayer.Repositories.Masters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +17,11 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(

@@ -8,5 +8,8 @@ namespace Models.ResponseModels
 {
     public class DepartmentResponseModel
     {
+        public long id { get; set; }
+        public string departmentName { get; set; }
+        public string? departmentCode { get; set; }
     }
 }
