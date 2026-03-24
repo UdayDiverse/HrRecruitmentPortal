@@ -1,11 +1,7 @@
-using BusinessLayer.Interfaces.Masters;
-using BusinessLayer.Services.Masters;
-using DataAccessLayer.Interfaces.Masters;
-using DataAccessLayer.Repositories.Masters;
+using BusinessLayer.Extensions;
+using BusinessLayer.Mappings.Masters;
+using DataAccessLayer.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +14,25 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddDataAccessDependencies(builder.Configuration, builder.Environment);
+builder.Services.AddBusinessLogicDependencies(builder.Configuration, builder.Environment);
 
+// Program.cs mein ye line makkhan chalegi
+builder.Services.AddAutoMapper(typeof(DepartmentMappingProfile).Assembly);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:4200"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

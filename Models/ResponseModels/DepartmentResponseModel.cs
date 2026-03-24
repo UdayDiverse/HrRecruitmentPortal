@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Models.ResponseModels
 {
-    public class DepartmentResponseModel
+    public class DepartmentReadResponseModel
     {
-        public long id { get; set; }
-        public string departmentName { get; set; }
-        public string? departmentCode { get; set; }
+        public Guid id { get; set; }
+        public string DeptName { get; set; }
     }
 }

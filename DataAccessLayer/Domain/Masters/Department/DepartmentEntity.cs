@@ -1,22 +1,38 @@
 ﻿using DataAccess.Domain;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccessLayer.Domain.Masters.Department
 {
-    public class DepartmentEntity : EntityBase
+    [Table("Departments")]
+    public class DepartmentEntity :EntityBase
     {
-            public string DepartmentName { get; set; }
-            public string? DepartmentCode { get; set; }
-            public long? LocationId { get; set; }    
-            public string? Description { get; set; }
-            public string Status { get; set; }
-            public bool IsActive { get; set; }        
-            public DateTime CreatedAt { get; set; }   
-            public DateTime? UpdatedAt { get; set; }
-        
+        [Column("Name")]
+        public string DeptName { get; set; }
+
+        [Column("Location")]
+        public string Location { get; set; }
+
+        [Column("JobCount")]
+        public int JobCount { get; set; }
+
+        [Column("Description")]
+        public string Description { get; set; }
+
+        [Column("CreatedOn")]
+        public DateTime CreatedOn { get; set; }
+
+        [Column("CreatedBy")]
+        public string CreatedBy { get; set; }
+
+        [Column("ModifiedOn")]
+        public DateTime? ModifiedOn { get; set; }
+
+        [Column("ModifiedBy")]
+        public string? ModifiedBy { get; set; }
     }
 }

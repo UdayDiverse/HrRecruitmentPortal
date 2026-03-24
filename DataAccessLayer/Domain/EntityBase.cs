@@ -8,7 +8,7 @@ namespace DataAccess.Domain
     {
         [Key]
         [Column("ID")]
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public string? Status { get; set; }
     }
 }

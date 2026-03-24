@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLayer.Interfaces.Masters;
+using DataAccessLayer.Domain.Masters.Department;
 using DataAccessLayer.Interfaces.Masters;
 using Models.ResponseModels;
 using System;
@@ -10,23 +11,18 @@ using System.Threading.Tasks;
 
 namespace BusinessLayer.Services.Masters
 {
-    public class DepartmentService(IDepartmentRepository deaprtmentRepository) : IDepartmentService
+    public class DepartmentService(IDepartmentRepository deaprtmentRepository, IMapper mapper) : IDepartmentService
     {
-        public async Task<DepartmentResponseModel?> GetByIdAsync(int id)
+        public async Task<DepartmentReadResponseModel?> GetByIdAsync(Guid id)
         {
-            var entity = await deaprtmentRepository.FindAsync(id);
+            DepartmentEntity? entity = await deaprtmentRepository.FindAsync(id);
 
             if (entity == null)
                 return null;
 
+            DepartmentReadResponseModel response = mapper.Map<DepartmentReadResponseModel>(entity);
 
-            return new DepartmentResponseModel
-            {
-                id = entity.Id,
-                departmentName = entity.DepartmentName,
-                departmentCode = entity.DepartmentCode
-            };
-
+            return response;
         }
     }
 }

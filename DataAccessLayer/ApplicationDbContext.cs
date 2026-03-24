@@ -8,7 +8,7 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<DepartmentEntity> Departments { get; set; }
+    public virtual DbSet<DepartmentEntity> Departments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,19 +16,7 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<DepartmentEntity>(entity =>
         {
-            entity.ToTable("Departments");
-
             entity.HasKey(e => e.Id);
-
-            entity.Property(e => e.DepartmentName)
-                  .HasMaxLength(100)
-                  .IsRequired();
-
-            entity.Property(e => e.DepartmentCode)
-                  .HasMaxLength(20);
-
-            entity.Property(e => e.IsActive)
-                  .HasDefaultValue(true);
         });
     }
 }
