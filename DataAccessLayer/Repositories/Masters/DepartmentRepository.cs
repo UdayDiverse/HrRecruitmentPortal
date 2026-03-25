@@ -17,9 +17,7 @@ namespace DataAccessLayer.Repositories.Masters
 
         public async Task<DepartmentEntity?> FindAsync(Guid id)
         {
-            return await _context.DepartmentEntity
-        .Where(x => x.Id == id)
-        .FirstOrDefaultAsync();
+            return await _context.DepartmentEntity.Include(x=>x.DepartmentMembers).Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<DepartmentSearchResponseEntity> SearchDeptAsync(DepartmentSearchRequestModel requestModel, string? offset, string count)
@@ -78,7 +76,7 @@ namespace DataAccessLayer.Repositories.Masters
                     // Fetch distinct filter values
                     response.Filters = new Dictionary<string, List<string>>
             {
-                { "RoleName", await _context.DepartmentEntity.Select(a => a.DeptName).Distinct().ToListAsync() },
+                { "DeptName", await _context.DepartmentEntity.Select(a => a.DeptName).Distinct().ToListAsync() },
                 { "Status", await _context.DepartmentEntity.Select(a => a.Status).Distinct().ToListAsync() },
                     };
                 }

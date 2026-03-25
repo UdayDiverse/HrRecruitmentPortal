@@ -31,6 +31,8 @@ namespace BusinessLayer.Services.Masters
             {
                 var departmentEntity = mapper.Map<DepartmentEntity>(DeptModel);
                 departmentEntity.CreatedOn = DateTime.Now;
+                departmentEntity.Status = "Active";
+                departmentEntity.CreatedBy = "Admin";
 
                 if (departmentEntity.DepartmentMembers != null)
                 {

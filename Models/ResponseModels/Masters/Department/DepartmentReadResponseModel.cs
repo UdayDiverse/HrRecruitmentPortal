@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models.RequestModels.Masters.Department;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,7 @@ namespace Models.ResponseModels.Masters.Department
     {
         public Guid id { get; set; }
         public string DeptName { get; set; }
+        public List<DeptMemberRequestModel> DepartmentMembers { get; set; }
     }
+        
 }

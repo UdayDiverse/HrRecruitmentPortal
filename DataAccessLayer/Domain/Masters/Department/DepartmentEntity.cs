@@ -16,7 +16,7 @@ namespace DataAccessLayer.Domain.Masters.Department
         public string Location { get; set; }
 
         [Column("JobCount")]
-        public int JobCount { get; set; }
+        public int? JobCount { get; set; }
 
         [Column("Description")]
         public string Description { get; set; }
