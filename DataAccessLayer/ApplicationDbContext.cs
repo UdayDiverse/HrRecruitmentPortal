@@ -1,6 +1,8 @@
 ﻿using DataAccess.Domain.Masters.LookUpMst;
 using DataAccess.Domain.Masters.LookUpType;
 using DataAccessLayer.Domain.Masters.Department;
+using DataAccessLayer.Domain.Masters.Job;
+using DataAccessLayer.Domain.Masters.User;
 using Microsoft.EntityFrameworkCore;
 
 public class ApplicationDbContext : DbContext
@@ -12,6 +14,8 @@ public class ApplicationDbContext : DbContext
 
     public virtual DbSet<DepartmentEntity> DepartmentEntity { get; set; }
     public virtual DbSet<DepartmentMembersEntity> DepartmentMembersEntity { get; set; }
+    public virtual DbSet<UserEntity> UserEntity { get; set; }
+    public virtual DbSet<JobEntity> JobEntity { get; set; }
     public virtual DbSet<LookupTypeMstEntity> LookupTypeMstEntities { get; set; }
     public virtual DbSet<LookupMstEntity> LookupMstEntities { get; set; }
 
@@ -26,6 +30,16 @@ public class ApplicationDbContext : DbContext
             entity.HasMany(d => d.DepartmentMembers)
                   .WithOne(d => d.Department)
                   .HasForeignKey(m => m.DeptId);
+        });
+
+        modelBuilder.Entity<JobEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne(e => e.Department)
+                .WithMany()
+                .HasForeignKey(e => e.DeptId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<LookupMstEntity>(entity =>

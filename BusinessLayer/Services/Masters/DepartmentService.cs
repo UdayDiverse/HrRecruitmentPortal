@@ -9,12 +9,14 @@ using Models.ResponseModels.Masters.Department;
 
 namespace BusinessLayer.Services.Masters
 {
-    public class DepartmentService(IDepartmentRepository departmentRepository, IMapper mapper) : IDepartmentService
+    public class DepartmentService(IDepartmentRepository departmentRepository, IUserRepository userRepository, IMapper mapper) : IDepartmentService
     {
         public async Task<List<DepartmentReadResponseModel>> GetAllAsync()
         {
             List<DepartmentEntity> entities = await departmentRepository.GetAllWithMembersAsync();
-            return mapper.Map<List<DepartmentReadResponseModel>>(entities);
+            var response = mapper.Map<List<DepartmentReadResponseModel>>(entities);
+            await EnrichDepartmentNamesAsync(response);
+            return response;
         }
 
         public async Task<DepartmentReadResponseModel?> GetByIdAsync(Guid id)
@@ -25,6 +27,7 @@ namespace BusinessLayer.Services.Masters
                 return null;
 
             DepartmentReadResponseModel response = mapper.Map<DepartmentReadResponseModel>(entity);
+            await EnrichDepartmentNamesAsync(new List<DepartmentReadResponseModel> { response });
 
             return response;
         }
@@ -68,6 +71,7 @@ namespace BusinessLayer.Services.Masters
         {
             DepartmentSearchResponseEntity entityResponse = await departmentRepository.SearchDeptAsync(requestModel, offset, count);
             DeptSearchResponseModel response = mapper.Map<DeptSearchResponseModel>(entityResponse);
+            await EnrichDepartmentNamesAsync(response.Departments);
 
             return response;
         }
@@ -127,6 +131,31 @@ namespace BusinessLayer.Services.Masters
             }
 
             return responseModel;
+        }
+
+        private async Task EnrichDepartmentNamesAsync(IEnumerable<DepartmentReadResponseModel> departments)
+        {
+            var list = departments.ToList();
+            if (list.Count == 0)
+                return;
+
+            var userIds = list
+                .SelectMany(x => new[] { x.OwnerId, x.CreatedBy })
+                .Where(x => x.HasValue)
+                .Select(x => x!.Value)
+                .Distinct()
+                .ToList();
+
+            var names = await userRepository.GetUserNamesByIdsAsync(userIds);
+
+            foreach (var item in list)
+            {
+                if (item.OwnerId.HasValue && names.TryGetValue(item.OwnerId.Value, out var ownerName))
+                    item.DeptOwnerName = ownerName;
+
+                if (item.CreatedBy.HasValue && names.TryGetValue(item.CreatedBy.Value, out var createdByName))
+                    item.CreatedByName = createdByName;
+            }
         }
     }
 }
