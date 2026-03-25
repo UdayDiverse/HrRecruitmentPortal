@@ -16,6 +16,8 @@ namespace BusinessLayer.Mappings.Masters
 
             CreateMap<DeptMemberRequestModel, DepartmentMembersEntity>().ReverseMap();
 
+            CreateMap<DepartmentSearchResponseEntity , DeptSearchResponseModel>().ReverseMap();
+
         }
     }
 }

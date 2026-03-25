@@ -19,7 +19,7 @@ namespace DataAccessLayer.Domain.Masters.Department
         public int? JobCount { get; set; }
 
         [Column("Description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Column("CreatedOn")]
         public DateTime CreatedOn { get; set; }

@@ -9,6 +9,6 @@ namespace Models.ResponseModels.Masters.Department
 {
     public class DeptSearchResponseModel : SearchResponseBase<DepartmentReadResponseModel>
     {
-        public List<DepartmentReadResponseModel> Roles => Results;
+        public List<DepartmentReadResponseModel> Departments => Results;
     }
 }
