@@ -3,20 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAccessLayer.Domain.Masters.Department
 {
-    [Table("Departments")]
-    public class DepartmentEntity :EntityBase
+    [Table("DeptMembers")]
+    public class DepartmentMembersEntity : EntityBase
     {
-        [Column("Name")]
-        public string DeptName { get; set; }
+        [Column("DeptId")]
+        public Guid DeptId { get; set; }
 
-        [Column("Location")]
-        public string Location { get; set; }
+        [Column("UserId")]
+        public Guid UserId { get; set; }
 
-        [Column("JobCount")]
-        public int JobCount { get; set; }
-
-        [Column("Description")]
-        public string Description { get; set; }
+        [Column("MemberTypeId")]
+        public Guid MemberTypeId { get; set; }
 
         [Column("CreatedOn")]
         public DateTime CreatedOn { get; set; }
@@ -29,7 +26,6 @@ namespace DataAccessLayer.Domain.Masters.Department
 
         [Column("ModifiedBy")]
         public string? ModifiedBy { get; set; }
-
-        public virtual ICollection<DepartmentMembersEntity>? DepartmentMembers { get; set; }
     }
 }
+

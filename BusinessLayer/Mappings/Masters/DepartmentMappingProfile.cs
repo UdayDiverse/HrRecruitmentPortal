@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using DataAccessLayer.Domain.Masters.Department;
-using Models.ResponseModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Models.RequestModels.Masters.Department;
+using Models.ResponseModels.Masters.Department;
 
 namespace BusinessLayer.Mappings.Masters
 {
@@ -14,6 +10,10 @@ namespace BusinessLayer.Mappings.Masters
         public DepartmentMappingProfile() { 
         
             CreateMap<DepartmentEntity, DepartmentReadResponseModel>().ReverseMap();
+
+            CreateMap<DepartmentCreateRequestModel, DepartmentEntity>();
+
+            CreateMap<DeptMemberRequestModel, DepartmentMembersEntity>();
 
         }
     }

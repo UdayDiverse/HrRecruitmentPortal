@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.ResponseModels
+namespace Models.ResponseModels.Masters.Department
 {
     public class DepartmentReadResponseModel
     {

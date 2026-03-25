@@ -1,9 +1,4 @@
 ﻿using DataAccess.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Interfaces.CommonInterface
 {
@@ -11,8 +6,7 @@ namespace DataAccessLayer.Interfaces.CommonInterface
         where TEntity : EntityBase
     {
         Task<TEntity?> FindAsync(Guid id);
-        Task<decimal> AddAsync(TEntity entity);
+        Task<Guid> AddAsync(TEntity entity);
         Task<TEntity> UpdateAsync(TEntity entity);
-        Task<List<TEntity>> GetAllAsync();
     }
 }

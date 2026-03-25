@@ -1,41 +1,53 @@
-﻿using DataAccessLayer.Domain.Masters.Department;
-using DataAccessLayer.Interfaces.Masters;
+﻿using DataAccess.Domain.Masters.LookUpMst;
+using DataAccess.Interfaces.Masters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Models.RequestModels.Masters.Department;
+using Models.RequestModels.Masters.LookUp;
 
-namespace DataAccessLayer.Repositories.Masters
+namespace DataAccess.Repositories.Masters
 {
-    public class DepartmentRepository(ApplicationDbContext _context) : IDepartmentRepository
+    public class LookupRepository(ApplicationDbContext _context) : ILookupReporsitory
     {
-        public async Task<Guid> AddAsync(DepartmentEntity entity)
+        public async Task<Guid> AddAsync(LookupMstEntity entity)
         {
-            _context.DepartmentEntity.Add(entity);
+            _context.LookupMstEntities.Add(entity);
+            _context.LookupMstEntities.Add(entity);
             await _context.SaveChangesAsync();
             return entity.Id;
         }
 
-        public async Task<DepartmentEntity?> FindAsync(Guid id)
+        public async Task<LookupMstEntity?> FindAsync(Guid id)
         {
-            return await _context.DepartmentEntity
-        .Where(x => x.Id == id)
-        .FirstOrDefaultAsync();
+            return await _context.LookupMstEntities
+            .Where(x => x.Id == id)
+            .FirstOrDefaultAsync();
         }
 
-        public async Task<DepartmentSearchResponseEntity> SearchDeptAsync(DepartmentSearchRequestModel requestModel, string? offset, string count)
+        public async Task<LookupMstEntity?> FindByValue(LookUpRequestModel requestModel)
         {
-            var response = new DepartmentSearchResponseEntity();
+            return await _context.LookupMstEntities
+               .Where(x => x.Value == requestModel.Value && x.Description == requestModel.Description)
+               .FirstOrDefaultAsync();
+        }
+
+        public async Task<LookupSearchResponseEntity> SearchLookUpAsync(LookUpSearchRequestModel requestModel, string? offset, string count)
+        {
+            var response = new LookupSearchResponseEntity();
             try
             {
-                var query = _context.DepartmentEntity.AsQueryable();
+                var query = _context.LookupMstEntities.AsQueryable();
 
-                if (!string.IsNullOrWhiteSpace(requestModel.DeptName))
+                if (!string.IsNullOrWhiteSpace(requestModel.Type))
                 {
-                    query = query.Where(t => t.DeptName.ToLower().Equals(requestModel.DeptName.ToLower()));
+                    query = query.Where(t => t.Type.ToLower().Contains(requestModel.Type.ToLower()));
+                }
+                if (!string.IsNullOrWhiteSpace(requestModel.Value))
+                {
+                    query = query.Where(t => t.Value.ToLower().Contains(requestModel.Value.ToLower()));
                 }
                 if (!string.IsNullOrWhiteSpace(requestModel.Status))
                 {
-                    query = query.Where(t => t.Status.ToLower().Equals(requestModel.Status.ToLower()));
+                    query = query.Where(t => t.Status.ToLower().Contains(requestModel.Status.ToLower()));
                 }
 
                 response.Paging.Total = await query.AsNoTracking().CountAsync();
@@ -46,7 +58,7 @@ namespace DataAccessLayer.Repositories.Masters
 
                 if (parsedCount == 0)
                 {
-                    response.Departments = await query.ToListAsync();
+                    response.LookUps = await query.ToListAsync();
 
                     // Set pagination values
                     response.Paging.TotalPages = 0;
@@ -58,11 +70,11 @@ namespace DataAccessLayer.Repositories.Masters
                 }
                 else
                 {
-                    response.Departments = await query.Skip(parsedOffset).Take(parsedCount).ToListAsync();
+                    response.LookUps = await query.Skip(parsedOffset).Take(parsedCount).ToListAsync();
 
                     response.Paging.TotalPages = (int)Math.Ceiling((double)response.Paging.Total / parsedCount);
                     response.Paging.CurrentPage = (parsedOffset / parsedCount) + 1;
-                    response.Paging.Results = response.Departments.Count();
+                    response.Paging.Results = response.LookUps.Count();
 
                     int nextOffset = parsedOffset + parsedCount;
                     response.Paging.NextOffset = (response.Paging.Total > nextOffset) ? nextOffset.ToString() : null;
@@ -78,8 +90,10 @@ namespace DataAccessLayer.Repositories.Masters
                     // Fetch distinct filter values
                     response.Filters = new Dictionary<string, List<string>>
             {
-                { "RoleName", await _context.DepartmentEntity.Select(a => a.DeptName).Distinct().ToListAsync() },
-                { "Status", await _context.DepartmentEntity.Select(a => a.Status).Distinct().ToListAsync() },
+                { "Type", await _context.LookupMstEntities.Select(a => a.Type).Distinct().ToListAsync() },
+                { "Status", await _context.LookupMstEntities.Select(a => a.Status).Distinct().ToListAsync() },
+                { "Value", await _context.LookupMstEntities.Select(a => a.Value).Distinct().ToListAsync() },
+
                     };
                 }
 
@@ -94,9 +108,12 @@ namespace DataAccessLayer.Repositories.Masters
             return response;
         }
 
-        public Task<DepartmentEntity> UpdateAsync(DepartmentEntity entity)
+        public async Task<Guid> UpdateAsync(LookupMstEntity entity)
         {
-            throw new NotImplementedException();
+            _context.LookupMstEntities.Update(entity);
+            await _context.SaveChangesAsync();
+
+            return entity.Id;
         }
     }
 }

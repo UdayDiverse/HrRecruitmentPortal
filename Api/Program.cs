@@ -1,5 +1,4 @@
 using BusinessLayer.Extensions;
-using BusinessLayer.Mappings.Masters;
 using DataAccessLayer.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +15,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDataAccessDependencies(builder.Configuration, builder.Environment);
 builder.Services.AddBusinessLogicDependencies(builder.Configuration, builder.Environment);
-
-// Program.cs mein ye line makkhan chalegi
-builder.Services.AddAutoMapper(typeof(DepartmentMappingProfile).Assembly);
 
 builder.Services.AddCors(options =>
 {
@@ -45,10 +41,10 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

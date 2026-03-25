@@ -1,6 +1,9 @@
 ﻿using BusinessLayer.Interfaces.Masters;
 using BusinessLayer.Mappings.Masters;
 using BusinessLayer.Services.Masters;
+using BusinessLogic.Interfaces.Masters;
+using BusinessLogic.Mappings.Masters;
+using BusinessLogic.Services.Masters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +16,12 @@ namespace BusinessLayer.Extensions
         {
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddAutoMapper(typeof(DepartmentMappingProfile).Assembly);
+
+            services.AddScoped<ILookUpTypeService, LookUpTypeService>();
+            services.AddAutoMapper(typeof(LookUpTypeMappingProfile).Assembly);
+
+            services.AddScoped<ILookUpService, LookupService>();
+            services.AddAutoMapper(typeof(LookUpMappingProfile).Assembly);
 
             return services;
         }
