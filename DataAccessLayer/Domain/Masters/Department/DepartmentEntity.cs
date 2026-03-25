@@ -33,6 +33,6 @@ namespace DataAccessLayer.Domain.Masters.Department
         [Column("ModifiedBy")]
         public string? ModifiedBy { get; set; }
 
-        public virtual ICollection<DepartmentMembersEntity>? DepartmentMembers { get; set; }
+        public virtual ICollection<DepartmentMembersEntity>? DepartmentMembers { get; set; } = new HashSet<DepartmentMembersEntity>();
     }
 }

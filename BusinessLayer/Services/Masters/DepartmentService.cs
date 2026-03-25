@@ -30,12 +30,12 @@ namespace BusinessLayer.Services.Masters
             try
             {
                 var departmentEntity = mapper.Map<DepartmentEntity>(DeptModel);
+                departmentEntity.CreatedOn = DateTime.Now;
 
                 if (departmentEntity.DepartmentMembers != null)
                 {
                     foreach (var member in departmentEntity.DepartmentMembers)
                     {
-                        member.DeptId = departmentEntity.Id;
                         member.CreatedOn = DateTime.Now;
                         member.CreatedBy = "System_User";                       
                     }

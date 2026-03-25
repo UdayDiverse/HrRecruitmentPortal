@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public virtual DbSet<DepartmentEntity> DepartmentEntity { get; set; }
+    public virtual DbSet<DepartmentMembersEntity> DepartmentMembersEntity { get; set; }
     public virtual DbSet<LookupTypeMstEntity> LookupTypeMstEntities { get; set; }
     public virtual DbSet<LookupMstEntity> LookupMstEntities { get; set; }
 
@@ -21,6 +22,10 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<DepartmentEntity>(entity =>
         {
             entity.HasKey(e => e.Id);
+
+            entity.HasMany(d => d.DepartmentMembers)
+                  .WithOne(d => d.Department)
+                  .HasForeignKey(m => m.DeptId);
         });
 
         modelBuilder.Entity<LookupMstEntity>(entity =>

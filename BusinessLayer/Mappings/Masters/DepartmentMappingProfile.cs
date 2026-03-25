@@ -11,7 +11,8 @@ namespace BusinessLayer.Mappings.Masters
         
             CreateMap<DepartmentEntity, DepartmentReadResponseModel>().ReverseMap();
 
-            CreateMap<DepartmentCreateRequestModel, DepartmentEntity>().ReverseMap();
+            CreateMap<DepartmentCreateRequestModel, DepartmentEntity>()
+            .ForMember(dest => dest.DepartmentMembers, opt => opt.MapFrom(src => src.DepartmentMembers));
 
             CreateMap<DeptMemberRequestModel, DepartmentMembersEntity>().ReverseMap();
 

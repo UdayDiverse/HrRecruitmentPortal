@@ -12,20 +12,13 @@ namespace DataAccessLayer.Domain.Masters.Department
         [Column("UserId")]
         public Guid UserId { get; set; }
 
-        [Column("MemberTypeId")]
-        public Guid MemberTypeId { get; set; }
-
         [Column("CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
         [Column("CreatedBy")]
         public string CreatedBy { get; set; }
 
-        [Column("ModifiedOn")]
-        public DateTime? ModifiedOn { get; set; }
-
-        [Column("ModifiedBy")]
-        public string? ModifiedBy { get; set; }
+        public DepartmentEntity? Department { get; set; }
     }
 }
 
