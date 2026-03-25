@@ -5,12 +5,12 @@
         public string Name { get; set; } 
         public string? Location { get; set; }
         public string? Description { get; set; }
-        public List<DeptMemberRequestModel> Members { get; set; } = new();
+        public Guid? OwnerId { get; set; }
+        public List<DeptMemberRequestModel> DepartmentMembers { get; set; } = new();
     }
 
     public class DeptMemberRequestModel
     {
         public Guid UserId { get; set; }
-        public Guid MemberTypeId { get; set; } 
     }
 }

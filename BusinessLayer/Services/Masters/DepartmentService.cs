@@ -37,7 +37,7 @@ namespace BusinessLayer.Services.Masters
                     {
                         member.DeptId = departmentEntity.Id;
                         member.CreatedOn = DateTime.Now;
-                        member.CreatedBy = "System_User";
+                        member.CreatedBy = "System_User";                       
                     }
                 }
 

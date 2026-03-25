@@ -6,6 +6,9 @@ namespace DataAccessLayer.Domain.Masters.Department
     [Table("Departments")]
     public class DepartmentEntity :EntityBase
     {
+        [Column("OwnerId")]
+        public Guid? OwnerId { get; set; }
+
         [Column("Name")]
         public string DeptName { get; set; }
 
