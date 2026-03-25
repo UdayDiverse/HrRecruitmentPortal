@@ -13,6 +13,8 @@ namespace DataAccessLayer.Extensions
         public static IServiceCollection AddDataAccessDependencies(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IJobRepository, JobRepository>();
 
             services.AddScoped<ILookupTypeReporsitory, LookupTypeReporsitory>();
             services.AddScoped<ILookupReporsitory, LookupRepository>();
