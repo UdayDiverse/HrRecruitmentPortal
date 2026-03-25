@@ -1,6 +1,7 @@
 ﻿using DataAccess.Domain.Masters.LookUpMst;
 using DataAccess.Domain.Masters.LookUpType;
 using DataAccessLayer.Domain.Masters.Department;
+using DataAccessLayer.Domain.Masters.User;
 using Microsoft.EntityFrameworkCore;
 
 public class ApplicationDbContext : DbContext
@@ -12,6 +13,7 @@ public class ApplicationDbContext : DbContext
 
     public virtual DbSet<DepartmentEntity> DepartmentEntity { get; set; }
     public virtual DbSet<DepartmentMembersEntity> DepartmentMembersEntity { get; set; }
+    public virtual DbSet<UserEntity> UserEntity { get; set; }
     public virtual DbSet<LookupTypeMstEntity> LookupTypeMstEntities { get; set; }
     public virtual DbSet<LookupMstEntity> LookupMstEntities { get; set; }
 
