@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessLayer.Interfaces.Masters;
 using DataAccessLayer.Domain.Masters.Department;
 using DataAccessLayer.Interfaces.Masters;
@@ -11,6 +11,12 @@ namespace BusinessLayer.Services.Masters
 {
     public class DepartmentService(IDepartmentRepository departmentRepository, IMapper mapper) : IDepartmentService
     {
+        public async Task<List<DepartmentReadResponseModel>> GetAllAsync()
+        {
+            List<DepartmentEntity> entities = await departmentRepository.GetAllWithMembersAsync();
+            return mapper.Map<List<DepartmentReadResponseModel>>(entities);
+        }
+
         public async Task<DepartmentReadResponseModel?> GetByIdAsync(Guid id)
         {
             DepartmentEntity? entity = await departmentRepository.FindAsync(id);
@@ -39,7 +45,7 @@ namespace BusinessLayer.Services.Masters
                     foreach (var member in departmentEntity.DepartmentMembers)
                     {
                         member.CreatedOn = DateTime.Now;
-                        member.CreatedBy = "System_User";                       
+                        member.CreatedBy = "System_User";
                     }
                 }
 
@@ -48,7 +54,6 @@ namespace BusinessLayer.Services.Masters
                 response.responseCode = 200;
                 response.message = "Successfully Created";
                 response.Id = result;
-
             }
             catch (Exception ex)
             {
@@ -65,6 +70,64 @@ namespace BusinessLayer.Services.Masters
             DeptSearchResponseModel response = mapper.Map<DeptSearchResponseModel>(entityResponse);
 
             return response;
+        }
+
+        public async Task<CommonResponseModel> UpdateDepartmentAsync(Guid id, DepartmentUpdateRequestModel requestModel)
+        {
+            CommonResponseModel responseModel = new CommonResponseModel();
+
+            try
+            {
+                DepartmentEntity? entity = await departmentRepository.FindAsync(id);
+
+                if (entity == null)
+                {
+                    responseModel.responseCode = StatusCodes.Status400BadRequest;
+                    responseModel.message = "Data Not Found!";
+                    return responseModel;
+                }
+
+                if (!string.IsNullOrWhiteSpace(requestModel.DeptName))
+                    entity.DeptName = requestModel.DeptName;
+
+                if (!string.IsNullOrWhiteSpace(requestModel.Location))
+                    entity.Location = requestModel.Location;
+
+                if (!string.IsNullOrWhiteSpace(requestModel.Description))
+                    entity.Description = requestModel.Description;
+
+                if (!string.IsNullOrWhiteSpace(requestModel.Status))
+                    entity.Status = requestModel.Status;
+
+                entity.OwnerId = requestModel.OwnerId;
+                entity.ModifiedOn = DateTime.Now;
+                entity.ModifiedBy = "Admin";
+
+                var members = requestModel.DepartmentMembers
+                    .Select(member => new DepartmentMembersEntity
+                    {
+                        DeptId = entity.Id,
+                        UserId = member.UserId,
+                        CreatedOn = DateTime.Now,
+                        CreatedBy = "System_User"
+                    })
+                    .ToList();
+
+                await departmentRepository.ReplaceMembersAsync(entity.Id, members);
+
+                await departmentRepository.UpdateAsync(entity);
+
+                responseModel.responseCode = StatusCodes.Status200OK;
+                responseModel.message = "Updated Successfully!";
+                responseModel.Id = entity.Id;
+            }
+            catch (Exception ex)
+            {
+                responseModel.responseCode = StatusCodes.Status400BadRequest;
+                responseModel.message = ex.Message;
+            }
+
+            return responseModel;
         }
     }
 }

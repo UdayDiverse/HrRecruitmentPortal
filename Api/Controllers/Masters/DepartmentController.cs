@@ -1,4 +1,4 @@
-﻿using BusinessLayer.Interfaces.Masters;
+using BusinessLayer.Interfaces.Masters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.RequestModels.Masters.Department;
@@ -37,6 +37,22 @@ namespace Api.Controllers.Masters
             if (result?.responseCode == 400)
                 return BadRequest(result);
             return Ok(result);
+        }
+
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var data = await departmentService.GetAllAsync();
+            return Ok(data);
+        }
+
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] DepartmentUpdateRequestModel requestModel)
+        {
+            var data = await departmentService.UpdateDepartmentAsync(id, requestModel);
+            if (data.responseCode == 400)
+                return BadRequest(data);
+            return Ok(data);
         }
 
     }

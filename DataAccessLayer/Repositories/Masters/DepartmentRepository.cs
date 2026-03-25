@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Domain.Masters.Department;
+using DataAccessLayer.Domain.Masters.Department;
 using DataAccessLayer.Interfaces.Masters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,16 @@ namespace DataAccessLayer.Repositories.Masters
 
         public async Task<DepartmentEntity?> FindAsync(Guid id)
         {
-            return await _context.DepartmentEntity.Include(x=>x.DepartmentMembers).Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.DepartmentEntity.Include(x => x.DepartmentMembers).Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<DepartmentEntity>> GetAllWithMembersAsync()
+        {
+            return await _context.DepartmentEntity
+                .Include(x => x.DepartmentMembers)
+                .AsNoTracking()
+                .OrderByDescending(x => x.CreatedOn)
+                .ToListAsync();
         }
 
         public async Task<DepartmentSearchResponseEntity> SearchDeptAsync(DepartmentSearchRequestModel requestModel, string? offset, string count)
@@ -38,15 +47,13 @@ namespace DataAccessLayer.Repositories.Masters
 
                 response.Paging.Total = await query.AsNoTracking().CountAsync();
 
-                // Try parsing offset and count
                 int parsedOffset = int.TryParse(offset, out int tempOffset) ? tempOffset : 0;
-                int parsedCount = int.TryParse(count, out int tempCount) ? tempCount : 10; // Default count if parsing fails
+                int parsedCount = int.TryParse(count, out int tempCount) ? tempCount : 10;
 
                 if (parsedCount == 0)
                 {
                     response.Departments = await query.ToListAsync();
 
-                    // Set pagination values
                     response.Paging.TotalPages = 0;
                     response.Paging.CurrentPage = 0;
                     response.Paging.Results = 0;
@@ -73,14 +80,12 @@ namespace DataAccessLayer.Repositories.Masters
                         ? $"?offset={(parsedOffset - parsedCount)}&count={parsedCount}"
                         : null;
 
-                    // Fetch distinct filter values
                     response.Filters = new Dictionary<string, List<string>>
-            {
-                { "DeptName", await _context.DepartmentEntity.Select(a => a.DeptName).Distinct().ToListAsync() },
-                { "Status", await _context.DepartmentEntity.Select(a => a.Status).Distinct().ToListAsync() },
+                    {
+                        { "DeptName", await _context.DepartmentEntity.Select(a => a.DeptName).Distinct().ToListAsync() },
+                        { "Status", await _context.DepartmentEntity.Select(a => a.Status).Distinct().ToListAsync() },
                     };
                 }
-
 
                 response.responseCode = StatusCodes.Status200OK;
             }
@@ -92,9 +97,28 @@ namespace DataAccessLayer.Repositories.Masters
             return response;
         }
 
-        public Task<DepartmentEntity> UpdateAsync(DepartmentEntity entity)
+        public async Task ReplaceMembersAsync(Guid deptId, List<DepartmentMembersEntity> members)
         {
-            throw new NotImplementedException();
+            var existingMembers = await _context.DepartmentMembersEntity
+                .Where(x => x.DeptId == deptId)
+                .ToListAsync();
+
+            if (existingMembers.Count > 0)
+            {
+                _context.DepartmentMembersEntity.RemoveRange(existingMembers);
+            }
+
+            if (members.Count > 0)
+            {
+                await _context.DepartmentMembersEntity.AddRangeAsync(members);
+            }
+        }
+
+        public async Task<DepartmentEntity> UpdateAsync(DepartmentEntity entity)
+        {
+            _context.DepartmentEntity.Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
     }
 }
