@@ -1,5 +1,4 @@
 using BusinessLayer.Interfaces.Masters;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.RequestModels.Masters.Department;
 
@@ -39,7 +38,8 @@ namespace Api.Controllers.Masters
             return Ok(result);
         }
 
-        [HttpGet("get-all")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet("getAllDeptWithUsers")]
         public async Task<IActionResult> GetAll()
         {
             var data = await departmentService.GetAllAsync();

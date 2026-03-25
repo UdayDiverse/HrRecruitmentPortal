@@ -7,6 +7,7 @@
         public string? Description { get; set; }
         public Guid? OwnerId { get; set; }
         public List<DeptMemberRequestModel> DepartmentMembers { get; set; } = new();
+        public Guid? CreatedBy { get; set; }
     }
 
     public class DeptMemberRequestModel

@@ -38,14 +38,14 @@ namespace BusinessLayer.Services.Masters
                 var departmentEntity = mapper.Map<DepartmentEntity>(DeptModel);
                 departmentEntity.CreatedOn = DateTime.Now;
                 departmentEntity.Status = "Active";
-                departmentEntity.CreatedBy = "Admin";
 
                 if (departmentEntity.DepartmentMembers != null)
                 {
                     foreach (var member in departmentEntity.DepartmentMembers)
                     {
                         member.CreatedOn = DateTime.Now;
-                        member.CreatedBy = "System_User";
+                        member.CreatedBy = DeptModel.CreatedBy;
+                        member.Status = "Active";
                     }
                 }
 
@@ -101,15 +101,14 @@ namespace BusinessLayer.Services.Masters
 
                 entity.OwnerId = requestModel.OwnerId;
                 entity.ModifiedOn = DateTime.Now;
-                entity.ModifiedBy = "Admin";
+                entity.ModifiedBy = requestModel.ActionBy;
 
                 var members = requestModel.DepartmentMembers
                     .Select(member => new DepartmentMembersEntity
                     {
                         DeptId = entity.Id,
                         UserId = member.UserId,
-                        CreatedOn = DateTime.Now,
-                        CreatedBy = "System_User"
+                        CreatedOn = DateTime.Now
                     })
                     .ToList();
 

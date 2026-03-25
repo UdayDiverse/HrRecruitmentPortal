@@ -34,7 +34,7 @@ namespace DataAccessLayer.Repositories.Masters
             var response = new DepartmentSearchResponseEntity();
             try
             {
-                var query = _context.DepartmentEntity.AsQueryable();
+                var query = _context.DepartmentEntity.Include(x=>x.DepartmentMembers).AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(requestModel.DeptName))
                 {

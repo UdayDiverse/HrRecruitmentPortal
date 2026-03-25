@@ -7,6 +7,7 @@ namespace Models.RequestModels.Masters.Department
         public string? Description { get; set; }
         public string? Status { get; set; }
         public Guid? OwnerId { get; set; }
+        public Guid? ActionBy { get; set; }
         public List<DeptMemberRequestModel> DepartmentMembers { get; set; } = new();
     }
 }

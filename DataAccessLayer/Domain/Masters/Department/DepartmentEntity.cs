@@ -25,13 +25,13 @@ namespace DataAccessLayer.Domain.Masters.Department
         public DateTime CreatedOn { get; set; }
 
         [Column("CreatedBy")]
-        public string CreatedBy { get; set; }
+        public Guid? CreatedBy { get; set; }
 
         [Column("ModifiedOn")]
         public DateTime? ModifiedOn { get; set; }
 
         [Column("ModifiedBy")]
-        public string? ModifiedBy { get; set; }
+        public Guid? ModifiedBy { get; set; }
 
         public virtual ICollection<DepartmentMembersEntity>? DepartmentMembers { get; set; } = new HashSet<DepartmentMembersEntity>();
     }
