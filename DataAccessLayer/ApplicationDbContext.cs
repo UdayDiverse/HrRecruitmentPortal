@@ -1,5 +1,7 @@
 ﻿using DataAccess.Domain.Masters.LookUpMst;
 using DataAccess.Domain.Masters.LookUpType;
+using DataAccessLayer.Domain.Common.Attachments;
+using DataAccessLayer.Domain.Common.Notes;
 using DataAccessLayer.Domain.Masters.Department;
 using DataAccessLayer.Domain.Masters.Job;
 using DataAccessLayer.Domain.Masters.User;
@@ -19,6 +21,8 @@ public class ApplicationDbContext : DbContext
     public virtual DbSet<UserEntity> UserEntity { get; set; }
     public virtual DbSet<LookupTypeMstEntity> LookupTypeMstEntities { get; set; }
     public virtual DbSet<LookupMstEntity> LookupMstEntities { get; set; }
+    public virtual DbSet<NoteEntity> NoteEntity { get; set; }
+    public virtual DbSet<AttachmentEntity> AttachmentEntity { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,6 +53,29 @@ public class ApplicationDbContext : DbContext
             entity.HasMany(d => d.JobMembers)
                 .WithOne(d => d.Job)
                 .HasForeignKey(m => m.JobId);
+        });
+
+        modelBuilder.Entity<NoteEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Header).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.ReferenceType).IsRequired();
+            entity.Property(e => e.ReferenceId).IsRequired();
+        });
+
+        modelBuilder.Entity<AttachmentEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.FilePath).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.FileName).HasMaxLength(200);
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.ReferenceType).IsRequired();
+            entity.Property(e => e.ReferenceId).IsRequired();
         });
     }
 }
