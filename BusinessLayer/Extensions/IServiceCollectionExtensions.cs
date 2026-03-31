@@ -18,9 +18,11 @@ namespace BusinessLayer.Extensions
         public static IServiceCollection AddBusinessLogicDependencies(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IJobService, JobService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INoteService, NoteService>();
             services.AddAutoMapper(typeof(DepartmentMappingProfile).Assembly);
+            services.AddAutoMapper(typeof(JobMappingProfile).Assembly);
             services.AddAutoMapper(typeof(UserMappingProfile).Assembly);
             services.AddAutoMapper(typeof(NoteMappingProfile).Assembly);
 
