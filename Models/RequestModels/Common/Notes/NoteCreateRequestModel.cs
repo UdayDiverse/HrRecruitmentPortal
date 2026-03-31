@@ -1,8 +1,10 @@
+using Models.Enums;
+
 namespace Models.RequestModels.Common.Notes
 {
     public class NoteCreateRequestModel
     {
-        public int ReferenceType { get; set; }
+        public ReferenceType ReferenceType { get; set; }
         public Guid ReferenceId { get; set; }
         public string Header { get; set; }
         public string? Description { get; set; }

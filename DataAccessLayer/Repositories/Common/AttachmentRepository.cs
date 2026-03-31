@@ -29,7 +29,7 @@ namespace DataAccessLayer.Repositories.Common
                 var query = context.AttachmentEntity.AsQueryable();
 
                 if (requestModel.ReferenceType.HasValue)
-                    query = query.Where(x => x.ReferenceType == requestModel.ReferenceType.Value);
+                    query = query.Where(x => x.ReferenceType == (int)requestModel.ReferenceType.Value);
 
                 if (requestModel.ReferenceId.HasValue)
                     query = query.Where(x => x.ReferenceId == requestModel.ReferenceId.Value);

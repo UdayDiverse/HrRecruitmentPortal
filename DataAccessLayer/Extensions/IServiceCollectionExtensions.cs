@@ -22,6 +22,7 @@ namespace DataAccessLayer.Extensions
             services.AddScoped<ILookupReporsitory, LookupRepository>();
             services.AddScoped<INoteRepository, NoteRepository>();
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+            services.AddScoped<IReferenceValidationRepository, ReferenceValidationRepository>();
             return services;
         }
     }

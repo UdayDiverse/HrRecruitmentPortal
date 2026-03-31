@@ -4,13 +4,17 @@ using DataAccessLayer.Domain.Common.Attachments;
 using DataAccessLayer.Interfaces.Common;
 using Microsoft.AspNetCore.Http;
 using Models;
+using Models.Enums;
 using Models.RequestModels.Common.Attachments;
 using Models.ResponseModels.Common.Attachments;
 
 namespace BusinessLayer.Services.Common
 {
-    public class AttachmentService(IAttachmentRepository attachmentRepository, IMapper mapper) : IAttachmentService
+    public class AttachmentService(IAttachmentRepository attachmentRepository, IReferenceValidationRepository referenceValidationRepository, IMapper mapper) : IAttachmentService
     {
+        private static bool IsValidReferenceType(ReferenceType referenceType)
+            => Enum.IsDefined(typeof(ReferenceType), referenceType);
+
         public async Task<AttachmentReadResponseModel?> GetByIdAsync(Guid id)
         {
             AttachmentEntity? entity = await attachmentRepository.FindAsync(id);
@@ -28,7 +32,24 @@ namespace BusinessLayer.Services.Common
 
             try
             {
+                if (!IsValidReferenceType(requestModel.ReferenceType))
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = "Invalid ReferenceType. Allowed values: Department or Job.";
+                    return response;
+                }
+
+                var referenceType = requestModel.ReferenceType;
+                bool isValidReference = await referenceValidationRepository.IsReferenceValidAsync(referenceType, requestModel.ReferenceId);
+                if (!isValidReference)
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = $"ReferenceId not found for {referenceType}.";
+                    return response;
+                }
+
                 var entity = mapper.Map<AttachmentEntity>(requestModel);
+                entity.ReferenceType = (int)requestModel.ReferenceType;
                 entity.CreatedOn = DateTime.Now;
                 entity.Status = "Active";
 
@@ -49,6 +70,29 @@ namespace BusinessLayer.Services.Common
 
         public async Task<AttachmentSearchResponseModel?> SearchAttachmentAsync(AttachmentSearchRequestModel requestModel, string? offset, string count)
         {
+            if (requestModel.ReferenceType.HasValue && !IsValidReferenceType(requestModel.ReferenceType.Value))
+            {
+                return new AttachmentSearchResponseModel
+                {
+                    responseCode = StatusCodes.Status400BadRequest,
+                    message = "Invalid ReferenceType. Allowed values: Department or Job."
+                };
+            }
+
+            if (requestModel.ReferenceType.HasValue && requestModel.ReferenceId.HasValue)
+            {
+                var referenceType = requestModel.ReferenceType.Value;
+                bool isValidReference = await referenceValidationRepository.IsReferenceValidAsync(referenceType, requestModel.ReferenceId.Value);
+                if (!isValidReference)
+                {
+                    return new AttachmentSearchResponseModel
+                    {
+                        responseCode = StatusCodes.Status400BadRequest,
+                        message = $"ReferenceId not found for {referenceType}."
+                    };
+                }
+            }
+
             AttachmentSearchResponseEntity entityResponse = await attachmentRepository.SearchAttachmentAsync(requestModel, offset, count);
             AttachmentSearchResponseModel response = mapper.Map<AttachmentSearchResponseModel>(entityResponse);
 

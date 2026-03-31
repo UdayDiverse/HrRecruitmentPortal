@@ -4,13 +4,17 @@ using DataAccessLayer.Domain.Common.Notes;
 using DataAccessLayer.Interfaces.Common;
 using Microsoft.AspNetCore.Http;
 using Models;
+using Models.Enums;
 using Models.RequestModels.Common.Notes;
 using Models.ResponseModels.Common.Notes;
 
 namespace BusinessLayer.Services.Common
 {
-    public class NoteService(INoteRepository noteRepository, IMapper mapper) : INoteService
+    public class NoteService(INoteRepository noteRepository, IReferenceValidationRepository referenceValidationRepository, IMapper mapper) : INoteService
     {
+        private static bool IsValidReferenceType(ReferenceType referenceType)
+            => Enum.IsDefined(typeof(ReferenceType), referenceType);
+
         public async Task<NoteReadResponseModel?> GetByIdAsync(Guid id)
         {
             NoteEntity? entity = await noteRepository.FindAsync(id);
@@ -28,7 +32,24 @@ namespace BusinessLayer.Services.Common
 
             try
             {
+                if (!IsValidReferenceType(requestModel.ReferenceType))
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = "Invalid ReferenceType. Allowed values: Department or Job.";
+                    return response;
+                }
+
+                var referenceType = requestModel.ReferenceType;
+                bool isValidReference = await referenceValidationRepository.IsReferenceValidAsync(referenceType, requestModel.ReferenceId);
+                if (!isValidReference)
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = $"ReferenceId not found for {referenceType}.";
+                    return response;
+                }
+
                 var entity = mapper.Map<NoteEntity>(requestModel);
+                entity.ReferenceType = (int)requestModel.ReferenceType;
                 entity.CreatedOn = DateTime.Now;
                 entity.Status = "Active";
 
@@ -49,6 +70,29 @@ namespace BusinessLayer.Services.Common
 
         public async Task<NoteSearchResponseModel?> SearchNoteAsync(NoteSearchRequestModel requestModel, string? offset, string count)
         {
+            if (requestModel.ReferenceType.HasValue && !IsValidReferenceType(requestModel.ReferenceType.Value))
+            {
+                return new NoteSearchResponseModel
+                {
+                    responseCode = StatusCodes.Status400BadRequest,
+                    message = "Invalid ReferenceType. Allowed values: Department or Job."
+                };
+            }
+
+            if (requestModel.ReferenceType.HasValue && requestModel.ReferenceId.HasValue)
+            {
+                var referenceType = requestModel.ReferenceType.Value;
+                bool isValidReference = await referenceValidationRepository.IsReferenceValidAsync(referenceType, requestModel.ReferenceId.Value);
+                if (!isValidReference)
+                {
+                    return new NoteSearchResponseModel
+                    {
+                        responseCode = StatusCodes.Status400BadRequest,
+                        message = $"ReferenceId not found for {referenceType}."
+                    };
+                }
+            }
+
             NoteSearchResponseEntity entityResponse = await noteRepository.SearchNoteAsync(requestModel, offset, count);
             NoteSearchResponseModel response = mapper.Map<NoteSearchResponseModel>(entityResponse);
 
