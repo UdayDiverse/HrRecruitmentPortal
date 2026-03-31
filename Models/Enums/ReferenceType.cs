@@ -2,7 +2,7 @@ namespace Models.Enums
 {
     public enum ReferenceType
     {
-        Department = 0,
-        Job = 1
+        Department = 1,
+        Job = 2
     }
 }
