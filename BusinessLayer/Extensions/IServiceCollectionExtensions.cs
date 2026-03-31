@@ -31,6 +31,8 @@ namespace BusinessLayer.Extensions
             services.AddAutoMapper(typeof(LookUpMappingProfile).Assembly);
             services.AddScoped<INoteService, NoteService>();
             services.AddAutoMapper(typeof(NoteMappingProfile).Assembly);
+            services.AddScoped<IAttachmentService, AttachmentService>();
+            services.AddAutoMapper(typeof(AttachmentMappingProfile).Assembly);
 
             return services;
         }
