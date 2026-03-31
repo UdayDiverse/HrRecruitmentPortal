@@ -25,6 +25,11 @@ namespace BusinessLayer.Services.Common
             if (!IsValidReferenceType((ReferenceType)entity.ReferenceType))
                 return null;
 
+            var referenceType = (ReferenceType)entity.ReferenceType;
+            bool isValidReference = await referenceValidationRepository.IsReferenceValidAsync(referenceType, entity.ReferenceId);
+            if (!isValidReference)
+                return null;
+
             AttachmentReadResponseModel response = mapper.Map<AttachmentReadResponseModel>(entity);
             return response;
         }
@@ -129,6 +134,15 @@ namespace BusinessLayer.Services.Common
 
         public async Task<AttachmentSearchResponseModel?> SearchAttachmentAsync(AttachmentSearchRequestModel requestModel, string? offset, string count)
         {
+            if (!requestModel.ReferenceType.HasValue && requestModel.ReferenceId.HasValue)
+            {
+                return new AttachmentSearchResponseModel
+                {
+                    responseCode = StatusCodes.Status400BadRequest,
+                    message = "ReferenceType is required when ReferenceId is provided."
+                };
+            }
+
             if (requestModel.ReferenceType.HasValue && !IsValidReferenceType(requestModel.ReferenceType.Value))
             {
                 return new AttachmentSearchResponseModel

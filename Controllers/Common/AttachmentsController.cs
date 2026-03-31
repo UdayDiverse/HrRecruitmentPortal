@@ -31,7 +31,7 @@ namespace HrRecruitmentPortal.Controllers.Common
         [HttpPost("search")]
         public async Task<ActionResult> Search(AttachmentSearchRequestModel requestModel, [FromQuery] string? offset = null, [FromQuery] string? count = null)
         {
-            var result = await attachmentService.SearchAttachmentAsync(requestModel, offset, count!);
+            var result = await attachmentService.SearchAttachmentAsync(requestModel, offset, count ?? "10");
             if (result?.responseCode == 400)
                 return BadRequest(result);
             return Ok(result);
