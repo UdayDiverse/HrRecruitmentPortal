@@ -2,6 +2,7 @@ using DataAccessLayer.Domain.Common.Attachments;
 using DataAccessLayer.Interfaces.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Models.Enums;
 using Models.RequestModels.Common.Attachments;
 
 namespace DataAccessLayer.Repositories.Common
@@ -35,7 +36,7 @@ namespace DataAccessLayer.Repositories.Common
                     query = query.Where(x => x.ReferenceId == requestModel.ReferenceId.Value);
 
                 if (!string.IsNullOrWhiteSpace(requestModel.FileName))
-                    query = query.Where(x => x.FileName != null && x.FileName.ToLower().Equals(requestModel.FileName.ToLower()));
+                    query = query.Where(x => x.FileName != null && EF.Functions.Like(x.FileName.ToLower(), $"%{requestModel.FileName.ToLower()}%"));
 
                 if (!string.IsNullOrWhiteSpace(requestModel.Status))
                     query = query.Where(x => x.Status != null && x.Status.ToLower().Equals(requestModel.Status.ToLower()));
@@ -83,7 +84,16 @@ namespace DataAccessLayer.Repositories.Common
                     {
                         { "FileName", await context.AttachmentEntity.Where(a => a.FileName != null).Select(a => a.FileName!).Distinct().ToListAsync() },
                         { "Status", await context.AttachmentEntity.Where(a => a.Status != null).Select(a => a.Status!).Distinct().ToListAsync() },
-                        { "ReferenceType", await context.AttachmentEntity.Select(a => a.ReferenceType.ToString()).Distinct().ToListAsync() }
+                        {
+                            "ReferenceType",
+                            await context.AttachmentEntity
+                                .Select(a => a.ReferenceType)
+                                .Distinct()
+                                .Select(a => Enum.IsDefined(typeof(ReferenceType), a)
+                                    ? ((ReferenceType)a).ToString()
+                                    : a.ToString())
+                                .ToListAsync()
+                        }
                     };
                 }
 

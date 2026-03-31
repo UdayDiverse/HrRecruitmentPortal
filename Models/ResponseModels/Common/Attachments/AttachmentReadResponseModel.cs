@@ -1,9 +1,11 @@
+using Models.Enums;
+
 namespace Models.ResponseModels.Common.Attachments
 {
     public class AttachmentReadResponseModel
     {
         public Guid Id { get; set; }
-        public int ReferenceType { get; set; }
+        public ReferenceType ReferenceType { get; set; }
         public Guid ReferenceId { get; set; }
         public string FilePath { get; set; }
         public string? FileName { get; set; }

@@ -22,6 +22,9 @@ namespace BusinessLayer.Services.Common
             if (entity == null)
                 return null;
 
+            if (!IsValidReferenceType((ReferenceType)entity.ReferenceType))
+                return null;
+
             AttachmentReadResponseModel response = mapper.Map<AttachmentReadResponseModel>(entity);
             return response;
         }
