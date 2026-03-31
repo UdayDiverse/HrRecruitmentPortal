@@ -50,6 +50,13 @@ namespace DataAccessLayer.Repositories.Masters
                 int parsedOffset = int.TryParse(offset, out int tempOffset) ? tempOffset : 0;
                 int parsedCount = int.TryParse(count, out int tempCount) ? tempCount : 10;
 
+                var jobCounts = await _context.JobEntity.AsNoTracking().GroupBy(j => j.DeptId).Select(g => new { DeptId = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.DeptId, x => x.Count);
+
+                foreach (var dept in _context.DepartmentEntity)
+                {
+                    dept.JobCount = jobCounts.TryGetValue(dept.Id, out int countVal) ? countVal : 0;
+                }
+
                 if (parsedCount == 0)
                 {
                     response.Departments = await query.ToListAsync();

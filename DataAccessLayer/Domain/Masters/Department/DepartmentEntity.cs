@@ -15,7 +15,7 @@ namespace DataAccessLayer.Domain.Masters.Department
         [Column("Location")]
         public string Location { get; set; }
 
-        [Column("JobCount")]
+        [NotMapped]
         public int? JobCount { get; set; }
 
         [Column("Description")]
