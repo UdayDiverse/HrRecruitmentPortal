@@ -1,5 +1,6 @@
 ﻿using DataAccess.Domain.Masters.LookUpMst;
 using DataAccess.Domain.Masters.LookUpType;
+using DataAccessLayer.Domain.Common.Note;
 using DataAccessLayer.Domain.Masters.Department;
 using DataAccessLayer.Domain.Masters.User;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ public class ApplicationDbContext : DbContext
     public virtual DbSet<UserEntity> UserEntity { get; set; }
     public virtual DbSet<LookupTypeMstEntity> LookupTypeMstEntities { get; set; }
     public virtual DbSet<LookupMstEntity> LookupMstEntities { get; set; }
+    public virtual DbSet<NoteEntity> NoteEntity { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,5 +40,6 @@ public class ApplicationDbContext : DbContext
              .WithMany(a => a.Lookups)
              .HasForeignKey(b => b.TypeId);
         });
+
     }
 }
