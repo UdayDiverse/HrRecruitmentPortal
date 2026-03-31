@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using BusinessLayer.Interfaces.Common;
 using DataAccessLayer.Domain.Common.Attachments;
 using DataAccessLayer.Interfaces.Common;
@@ -32,37 +32,93 @@ namespace BusinessLayer.Services.Common
 
             try
             {
-                if (!IsValidReferenceType(requestModel.ReferenceType))
+                // ✅ 1. Validate ReferenceType
+                if (!Enum.IsDefined(typeof(ReferenceType), requestModel.ReferenceType))
                 {
                     response.responseCode = StatusCodes.Status400BadRequest;
-                    response.message = "Invalid ReferenceType. Allowed values: Department or Job.";
+                    response.message = "Invalid ReferenceType.";
                     return response;
                 }
 
-                var referenceType = requestModel.ReferenceType;
-                bool isValidReference = await referenceValidationRepository.IsReferenceValidAsync(referenceType, requestModel.ReferenceId);
+                // ✅ 2. Validate ReferenceId (Dept / Job exist karta hai ya nahi)
+                bool isValidReference = await referenceValidationRepository
+                    .IsReferenceValidAsync(requestModel.ReferenceType, requestModel.ReferenceId);
+
                 if (!isValidReference)
                 {
                     response.responseCode = StatusCodes.Status400BadRequest;
-                    response.message = $"ReferenceId not found for {referenceType}.";
+                    response.message = $"ReferenceId not found for {requestModel.ReferenceType}.";
                     return response;
                 }
 
-                var entity = mapper.Map<AttachmentEntity>(requestModel);
-                entity.ReferenceType = (int)requestModel.ReferenceType;
-                entity.CreatedOn = DateTime.Now;
-                entity.Status = "Active";
+                // ✅ 3. Validate File
+                if (requestModel.File == null || requestModel.File.Length == 0)
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = "File is required.";
+                    return response;
+                }
 
+                // ✅ 4. File Extension Check
+                var extension = Path.GetExtension(requestModel.File.FileName).ToLower();
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx" };
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = "Invalid file type.";
+                    return response;
+                }
+
+                // ✅ 5. File Size Check (5MB)
+                if (requestModel.File.Length > 5 * 1024 * 1024)
+                {
+                    response.responseCode = StatusCodes.Status400BadRequest;
+                    response.message = "File size should not exceed 5MB.";
+                    return response;
+                }
+
+                // ✅ 6. Create Folder if not exists
+                var folderPath = Path.Combine("wwwroot", "uploads");
+
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+
+                // ✅ 7. Generate Unique File Name
+                var uniqueFileName = Guid.NewGuid().ToString() + extension;
+                var fullPath = Path.Combine(folderPath, uniqueFileName);
+
+                // ✅ 8. Save File
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await requestModel.File.CopyToAsync(stream);
+                }
+
+                // ✅ 9. Prepare Entity
+                var entity = new AttachmentEntity
+                {
+                    Id = Guid.NewGuid(),
+                    ReferenceType = (int)requestModel.ReferenceType,
+                    ReferenceId = requestModel.ReferenceId,
+                    FilePath = "uploads/" + uniqueFileName,
+                    FileName = requestModel.File.FileName,
+                    CreatedBy = requestModel.CreatedBy,
+                    CreatedOn = DateTime.Now,
+                    Status = "Active"
+                };
+
+                // ✅ 10. Save to DB
                 var result = await attachmentRepository.AddAsync(entity);
 
+                // ✅ 11. Success Response
                 response.responseCode = StatusCodes.Status200OK;
-                response.message = "Successfully Created";
+                response.message = "File uploaded successfully.";
                 response.Id = result;
             }
             catch (Exception ex)
             {
-                response.responseCode = StatusCodes.Status400BadRequest;
-                response.message = ex.Message;
+                response.responseCode = StatusCodes.Status500InternalServerError;
+                response.message = "Something went wrong: " + ex.Message;
             }
 
             return response;
