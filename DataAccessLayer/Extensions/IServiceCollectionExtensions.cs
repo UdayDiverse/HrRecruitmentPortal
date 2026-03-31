@@ -1,6 +1,8 @@
-﻿using DataAccess.Interfaces.Masters;
+﻿using DataAccessLayer.Interfaces.Common;
+using DataAccess.Interfaces.Masters;
 using DataAccess.Repositories.Masters;
 using DataAccessLayer.Interfaces.Masters;
+using DataAccessLayer.Repositories.Common;
 using DataAccessLayer.Repositories.Masters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,7 @@ namespace DataAccessLayer.Extensions
 
             services.AddScoped<ILookupTypeReporsitory, LookupTypeReporsitory>();
             services.AddScoped<ILookupReporsitory, LookupRepository>();
+            services.AddScoped<INoteRepository, NoteRepository>();
             return services;
         }
     }
