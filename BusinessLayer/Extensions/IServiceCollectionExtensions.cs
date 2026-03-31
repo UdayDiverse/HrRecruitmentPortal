@@ -1,5 +1,8 @@
-﻿using BusinessLayer.Interfaces.Masters;
+﻿using BusinessLayer.Interfaces.Common;
+using BusinessLayer.Interfaces.Masters;
 using BusinessLayer.Mappings.Masters;
+using BusinessLayer.Mappings.Common;
+using BusinessLayer.Services.Common;
 using BusinessLayer.Services.Masters;
 using BusinessLogic.Interfaces.Masters;
 using BusinessLogic.Mappings.Masters;
@@ -26,6 +29,10 @@ namespace BusinessLayer.Extensions
 
             services.AddScoped<ILookUpService, LookupService>();
             services.AddAutoMapper(typeof(LookUpMappingProfile).Assembly);
+            services.AddScoped<INoteService, NoteService>();
+            services.AddAutoMapper(typeof(NoteMappingProfile).Assembly);
+            services.AddScoped<IAttachmentService, AttachmentService>();
+            services.AddAutoMapper(typeof(AttachmentMappingProfile).Assembly);
 
             return services;
         }
