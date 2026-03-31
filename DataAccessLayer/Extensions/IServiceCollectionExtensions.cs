@@ -1,5 +1,7 @@
 ﻿using DataAccess.Interfaces.Masters;
+using DataAccessLayer.Interfaces.Common;
 using DataAccess.Repositories.Masters;
+using DataAccessLayer.Repositories.Common;
 using DataAccessLayer.Interfaces.Masters;
 using DataAccessLayer.Repositories.Masters;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +15,9 @@ namespace DataAccessLayer.Extensions
         public static IServiceCollection AddDataAccessDependencies(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<INoteRepository, NoteRepository>();
 
             services.AddScoped<ILookupTypeReporsitory, LookupTypeReporsitory>();
             services.AddScoped<ILookupReporsitory, LookupRepository>();

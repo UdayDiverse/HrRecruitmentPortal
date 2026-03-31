@@ -1,6 +1,8 @@
 ﻿using DataAccess.Domain.Masters.LookUpMst;
 using DataAccess.Domain.Masters.LookUpType;
+using DataAccessLayer.Domain.Common.Note;
 using DataAccessLayer.Domain.Masters.Department;
+using DataAccessLayer.Domain.Masters.Job;
 using DataAccessLayer.Domain.Masters.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +15,12 @@ public class ApplicationDbContext : DbContext
 
     public virtual DbSet<DepartmentEntity> DepartmentEntity { get; set; }
     public virtual DbSet<DepartmentMembersEntity> DepartmentMembersEntity { get; set; }
+    public virtual DbSet<JobEntity> JobEntity { get; set; }
+    public virtual DbSet<JobMembersEntity> JobMembersEntity { get; set; }
     public virtual DbSet<UserEntity> UserEntity { get; set; }
     public virtual DbSet<LookupTypeMstEntity> LookupTypeMstEntities { get; set; }
     public virtual DbSet<LookupMstEntity> LookupMstEntities { get; set; }
+    public virtual DbSet<NoteEntity> NoteEntity { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +42,15 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(b => b.LookupTypeDetails)
              .WithMany(a => a.Lookups)
              .HasForeignKey(b => b.TypeId);
+        });
+
+        modelBuilder.Entity<JobEntity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasMany(d => d.JobMembers)
+                .WithOne(d => d.Job)
+                .HasForeignKey(m => m.JobId);
         });
     }
 }
