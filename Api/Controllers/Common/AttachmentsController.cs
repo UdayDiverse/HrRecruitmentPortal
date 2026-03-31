@@ -19,12 +19,14 @@ namespace Api.Controllers.Common
             return Ok(data);
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] AttachmentCreateRequestModel requestModel)
+        [HttpPost("Upload")]
+        public async Task<IActionResult> Create([FromForm] AttachmentCreateRequestModel requestModel)
         {
             var data = await attachmentService.CreateAttachmentAsync(requestModel);
+
             if (data.responseCode == 400)
                 return BadRequest(data);
+
             return Ok(data);
         }
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Models.Enums;
 
 namespace Models.RequestModels.Common.Attachments
@@ -6,8 +7,7 @@ namespace Models.RequestModels.Common.Attachments
     {
         public ReferenceType ReferenceType { get; set; }
         public Guid ReferenceId { get; set; }
-        public string FilePath { get; set; }
-        public string? FileName { get; set; }
+        public IFormFile File { get; set; }
         public Guid? CreatedBy { get; set; }
     }
 }
